@@ -1,3 +1,4 @@
+#Simple App to translates English to Morse's code and vice versa
 # Morse Code Translator
 import tkinter as tk
 from tkinter import DISABLED, IntVar, END
