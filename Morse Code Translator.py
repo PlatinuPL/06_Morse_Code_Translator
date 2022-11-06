@@ -23,6 +23,8 @@ root.config (bg = root_color)
 
 # Define functions
 def convert():
+    """Call the appropriate conversion function based off radio button values"""
+    #English to morse code:
     if language.get() == 1:
         get_morse()
     elif language.get() == 2:
@@ -30,56 +32,79 @@ def convert():
 
 
 def get_morse():
+    """Convert an English message to morse code"""
+    #String to hold morse code message
     morse_code = ""
+
+    #Get the input text and standardize it to lower case
     text = input_text.get("1.0", END)
     text = text.lower()
 
+    #Remove any letters of symbols not in our dict keys
     for letter in text:
         if letter not in english_to_morse.keys():
             text = text.replace(letter, "")
 
+    #Break up into individual words based on space " " and put into a list
     word_list = text.split(" ")
 
+    #Turn each individual word in word_list into a list of letters
     for word in word_list:
         letters = list(word)
+        #For each letter, get the morse code representation and append it to the string morse_code
         for letter in letters:
             morse_char = english_to_morse[letter]
             morse_code += morse_char
+            #Seperate individual letters with a space
             morse_code += " "
+        #Seperate individual words with a |
         morse_code += "|"
 
     output_text.insert("1.0", morse_code)
 
 
 def get_english():
+    """Convert a morse code message to english"""
+    #String to hold English message
     english_code = ""
+
+    #Get the input text
     text = input_text.get("1.0", END)   
 
+    #Remove any letters or symbols not in our dict keys
     for letter in text:
         if letter not in morse_to_english.keys():
             text = text.replace(letter, "")
 
+    #Break up each word based on | and put into a list
     word_list = text.split("|")
 
+    #Turn each word into a list of letters
     for word in word_list:
         letters = word.split(" ")
+        #For each letter, get the English representation and add it to the string English
         for letter in letters:
             english_char = morse_to_english[letter]
             english_code += english_char
+        #seperate individual words with a space
         english_code += " "
        
     output_text.insert("1.0", english_code)
 
 def clear():
+    """Clear both text fields"""
     input_text.delete("1.0", END)
     output_text.delete("1.0", END)
 
 def play():
+    """Play tones for corresponding dots and dashes"""
+    #Determine where the morse code is
     if language.get() == 1:
         text = output_text.get("1.0",END)
     elif language.get() == 2:
         text = input_text.get("1.0", END)
 
+    #Play the tones (., -, " " , |)
     for value in text:
         if value == ".":
             playsound('dot.mp3') 
@@ -93,8 +118,13 @@ def play():
             root.after(700)
         
 def show_guide():
+    """Show a morse code guide in a second window"""
+    #Image 'morse' needs to be a global variable to put on our window
+    #Window 'guide' needs to be global to close in another function.
     global morse
     global guide
+
+    #Create second window relative to the root window
     guide = tk.Toplevel()
     guide.title("Morse Guide")
     guide.iconbitmap("morse.ico")
@@ -107,13 +137,15 @@ def show_guide():
     label.pack(padx=10,pady=10, ipadx=5,ipady=5)
 
     # Guide protocol detect tohe closing guide window and change "guide button" state to normal
-    guide.protocol("WM_DELETE_WINDOW", hide_guide) 
+    guide.protocol("WM_DELETE_WINDOW", hide_guide) #if you use "X" button to close guide window (not "close" button) 
     close_button = tk.Button(guide, text="Close", font = button_font, bg=button_color, command= hide_guide)
     close_button.pack(padx=10, ipadx=50)
 
+    #Disabel the guide button
     guide_button.config(state=DISABLED)
 
 def hide_guide():
+    """Hide the guide"""
     guide_button.config(state=NORMAL)
     guide.destroy()
 
